@@ -6,6 +6,9 @@ __pycache__/
 # IDE stuff
 .idea*
 
+# Test data
+sampledata/*
+
 # C extensions
 *.so
 
