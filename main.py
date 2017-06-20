@@ -8,12 +8,11 @@ import geometry
 from adaptivegrid import adaptivegrid
 
 def readInput():
-    # vs3D, fs3D, xmax, ymax, zmax = objproc.readAndNormalizeMesh(sys.argv[3])
-    return objproc.readAndNormalizeMesh(sys.argv[3])
+    return objproc.objmesh(sys.argv[3])
 
-def createGrid(faces, xmax, ymax, zmax):
-    g = adaptivegrid((0, ymax), max(xmax, max(ymax, zmax)), 100)
-    for t in faces:
+def createGrid(mesh):
+    g = adaptivegrid((0, mesh.yspan), max(mesh.xspan, max(mesh.yspan, mesh.zspan)), 100)
+    for t in mesh.faces:
         g.insert(t)
     return g
 
@@ -55,10 +54,11 @@ def createHeatmap(grid, xmax, ymax, hpoints, vpoints):
 
     return result
 
-vertices, faces, xmax, ymax, zmax = readInput()
-grid = createGrid(faces, xmax, ymax, zmax)
-heatmapPoints = createHeatmap(grid, xmax, ymax, int(sys.argv[1]), int(sys.argv[2]))
+mesh = readInput()
+mesh.write('sampledata/potato')
+grid = createGrid(mesh)
+heatmapPoints = createHeatmap(grid, mesh.xspan, mesh.yspan, int(sys.argv[1]), int(sys.argv[2]))
 
 fig, ax = pl.subplots()
-plotTheThings(ax, faces, grid, heatmapPoints, zmax)
+plotTheThings(ax, mesh.faces, grid, heatmapPoints, mesh.zspan)
 plt.show()
