@@ -1,4 +1,11 @@
-class objmesh:
+class objbased_normalized_mesh:
+    def __init__(self, xspan, yspan, zspan, veritces, faces):
+        self.xspan = xspan
+        self.yspan = yspan
+        self.zspan = zspan
+        self.vertices = vertices
+        self.faces = faces
+
     def __init__(self, filename):
         vertices = []
         faces = []

@@ -4,7 +4,7 @@ from matplotlib import collections as mc
 import geometry
 
 # threshold should be such that no grid cell falls within a triangle
-class adaptivegrid:
+class adaptive2Dgrid:
 
     data = []
     count = 0
@@ -32,9 +32,15 @@ class adaptivegrid:
 
     def insert(self, triangle):
 
-        def insertAtQuadrantsPerVertex(t):
-            quadrantsPerVertex = set([self.findquadrant(t[i]) for i in range(3)])
-            for q in quadrantsPerVertex:
+        def insertAtIntersectingQuadrants(t):
+            centerpoint = (self.tlcorner[0] + self.size/2, self.tlcorner[1] - self.size/2)
+
+            if geometry.inTriangle(centerpoint, t):
+                quadrants = [self.upperleft, self.upperright, self.lowerleft, self.lowerright]
+            else:
+                quadrants = set([self.findquadrant(t[i]) for i in range(3)])
+
+            for q in quadrants:
                 q.insert(t)
 
         if self.leaf:
@@ -47,21 +53,21 @@ class adaptivegrid:
             else:
                 childsize = self.size / 2
 
-                self.upperleft = adaptivegrid(self.tlcorner, childsize, self.threshold)
-                self.upperright = adaptivegrid((self.tlcorner[0] + childsize, self.tlcorner[1]), childsize, self.threshold)
-                self.lowerleft = adaptivegrid((self.tlcorner[0], self.tlcorner[1] - childsize), childsize, self.threshold)
-                self.lowerright = adaptivegrid((self.tlcorner[0] + childsize, self.tlcorner[1] - childsize), childsize, self.threshold)
+                self.upperleft = adaptive2Dgrid(self.tlcorner, childsize, self.threshold)
+                self.upperright = adaptive2Dgrid((self.tlcorner[0] + childsize, self.tlcorner[1]), childsize, self.threshold)
+                self.lowerleft = adaptive2Dgrid((self.tlcorner[0], self.tlcorner[1] - childsize), childsize, self.threshold)
+                self.lowerright = adaptive2Dgrid((self.tlcorner[0] + childsize, self.tlcorner[1] - childsize), childsize, self.threshold)
 
                 # add triangle to every quadrant containing one of the triangle's vertices
                 for t in self.data + [triangle]:
-                    insertAtQuadrantsPerVertex(t)
+                    insertAtIntersectingQuadrants(t)
 
                 del self.data
                 del self.count
                 self.leaf = False
 
         else:
-            insertAtQuadrantsPerVertex(triangle)
+            insertAtIntersectingQuadrants(triangle)
 
     def find(self, point):
         leaf = self.findLeaf(point)
