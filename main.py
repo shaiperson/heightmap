@@ -1,64 +1,36 @@
-import sys
-import pylab as pl
-from matplotlib import pyplot as plt
-
-import objproc
-import misc
+from objfileprocessing import objbased_normalized_mesh
+from adaptive2Dgrid import adaptive2Dgrid
 import geometry
-from adaptivegrid import adaptivegrid
+from sys import argv
+import numpy as np
+from matplotlib import pyplot as plt
+from threading import Thread
+from math import ceil, floor
 
-def readInput():
-    return objproc.objmesh(sys.argv[3])
+ADAPTIVE_2D_GRID_THRESHOLD = 100
 
-def createGrid(mesh):
-    g = adaptivegrid((0, mesh.yspan), max(mesh.xspan, max(mesh.yspan, mesh.zspan)), 100)
-    for t in mesh.faces:
-        g.insert(t)
-    return g
+# read command line arguments
+width = int(argv[1])
+height = int(argv[2])
+objfile = argv[3]
+nthreads = int(argv[4])
+# read .obj file into mesh object and into a quadtree-based 2D adaptive grid
+mesh = objbased_normalized_mesh(objfile)
+grid = adaptive2Dgrid( (0, mesh.yspan), max(mesh.xspan, mesh.yspan),  ADAPTIVE_2D_GRID_THRESHOLD)
+for f in mesh.faces:
+    grid.insert(f)
 
-def plotTheThings(axis, fs3D, grid, heights, zmax):
-    # plot triangles
-    fs2D = [ (p0[:2], p1[:2], p2[:2]) for (p0, p1, p2) in fs3D ]
-    misc.plotTriangles(fs2D, axis)
+# sample mesh into a height heatmap using the adaptive grid for efficient lookups
+result = np.zeros((height, width))
+for i in range(height):
+    for j in range(width):
+        samplingpoint = ((j/width)*mesh.xspan, (i/height)*mesh.yspan)
+        containing_faces = grid.find(samplingpoint)
+        if containing_faces:
+            sampleheight = max([geometry.calcMeshHeightFor2DPoint(samplingpoint, face) for face in containing_faces])
+            result.itemset((i,j), sampleheight)
+        # if no faces were found, result at (i,j) remains 0
 
-    # plot grid
-    grid.plot(axis, 'k')
-
-    # plot heightmap
-    red = [1, 0, 0, 1]
-    scaleHeightGreen = lambda zval: [0, zval/zmax, 0, 1]
-
-    xs = [t[0] for t in heights]
-    ys = [t[1] for t in heights]
-    cs = [scaleHeightGreen(t[2]) if t[2] > -1 else red for t in heights]
-    plt.scatter(xs, ys, facecolors=cs)
-
-
-def createHeatmap(grid, xmax, ymax, hpoints, vpoints):
-    xstep = xmax / hpoints
-    ystep = ymax / vpoints
-
-    result = []
-
-    planePoints = [(r * xstep, s * ystep) for r in range(hpoints+1) for s in range(vpoints+1)]
-    for point in planePoints:
-        # print(point)
-        x, y = point[0], point[1]
-        triangles = grid.find(point)
-        if triangles:
-            heights = list(map(lambda t: geometry.calcMeshHeightFor2DPoint(point, t), triangles))
-            result.append((x, y, max(heights)))
-        else:
-            sys.stderr.write("grid fail\n")
-            result.append((x, y, -1))
-
-    return result
-
-mesh = readInput()
-mesh.write('sampledata/potato')
-grid = createGrid(mesh)
-heatmapPoints = createHeatmap(grid, mesh.xspan, mesh.yspan, int(sys.argv[1]), int(sys.argv[2]))
-
-fig, ax = pl.subplots()
-plotTheThings(ax, mesh.faces, grid, heatmapPoints, mesh.zspan)
+plt.imshow(result)
+plt.colorbar()
 plt.show()
