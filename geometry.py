@@ -51,7 +51,7 @@ def calcMeshHeightFor2DPoint(point2D, triangle3D):
     try:
         tuv = np.linalg.solve(A, b)
     except:
-        sys.stderr.write('linea algebra fail\n')
+        # sys.stderr.write('linear algebra fail\n')
         return 0
 
     t = tuv[0]
