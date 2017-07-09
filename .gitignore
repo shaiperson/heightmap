@@ -8,6 +8,7 @@ __pycache__/
 
 # Test data
 sampledata/*
+results/*
 
 # C extensions
 *.so
