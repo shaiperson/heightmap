@@ -1,5 +1,8 @@
 from objfileprocessing import objbased_normalized_mesh
 from sys import argv
+# from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from time import time
 import heightmap
