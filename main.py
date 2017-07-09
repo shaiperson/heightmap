@@ -8,11 +8,12 @@ import heightmap
 objfile = argv[1]
 
 # read .obj file into mesh object
+print('Reading mesh from file...')
 reading_start = time()
 mesh = objbased_normalized_mesh(objfile)
 reading_end = time()
 
-print('reading time', reading_end - reading_start)
+print('Done! Reading time', reading_end - reading_start, '\n')
 
 width = height = nthreads = filename = None # for greater IDE happiness
 while True:
@@ -21,12 +22,15 @@ while True:
     nthreads = input('Number of threads: ') or nthreads
     filename = input('Result file: ') or filename
 
+    print('\n')
+    print('Processing...')
+
     processing_start = time()
     image = heightmap.create(mesh, int(width), int(height), int(nthreads))
     processing_end = time()
 
 
-    print('\n', 'Done! Processing time', processing_end - processing_start, '\n')
+    print('Done! Processing time', processing_end - processing_start, '\n')
 
     plt.imshow(image)
     plt.colorbar()
