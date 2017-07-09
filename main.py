@@ -31,4 +31,4 @@ while True:
     plt.imshow(image)
     plt.colorbar()
     plt.imsave(filename, image)
-    # plt.show()
+    plt.show()
