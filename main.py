@@ -1,11 +1,13 @@
 from objfileprocessing import objbased_normalized_mesh
-from sys import argv
+import sys
 from matplotlib import pyplot as plt
 from time import time
 import heightmap
 
+######### READING MESH FILE #########
+
 # read command line arguments
-objfile = argv[1]
+objfile = sys.argv[1]
 
 # read .obj file into mesh object
 print('Reading mesh from file...')
