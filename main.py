@@ -17,14 +17,19 @@ reading_end = time()
 
 print('Done! Reading time', reading_end - reading_start, '\n')
 
+######### CREATING HEIGHT MAPS #########
+
+# TODO: handle SIGINT to support correcting interactive input in runtime
+
 width = height = nthreads = filename = None # for greater IDE happiness
+colormap = 'viridis'
 while True:
     width = input('Map width: ') or width
     height = input('Map height: ') or height
     nthreads = input('Number of threads: ') or nthreads
     filename = input('Result file: ') or filename
+    colormap = input('Pyplot colormap (\'viridis\' by default): ') or colormap
 
-    print('\n')
     print('Processing...')
 
     processing_start = time()
