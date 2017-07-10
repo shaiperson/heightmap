@@ -61,7 +61,11 @@ class objbased_normalized_mesh:
                     self.faces.insert((a, b, c))
 
     def faces_for_2D_point(self, point):
-        return self.faces.find(point)
+        #return self.faces.find(point)
+        qtree_node = self.faces
+        while not qtree_node.leaf:
+            qtree_node = qtree_node.findquadrant(point)
+        return [ triangle for triangle in qtree_node.data if geometry.inTriangle(point, triangle) ]
 
     def write(self, filename):
         f = open(filename, 'w')
