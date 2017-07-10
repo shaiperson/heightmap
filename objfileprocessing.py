@@ -1,4 +1,6 @@
 from adaptive2Dgrid import adaptive2Dgrid
+import geometry
+import math
 
 ADAPTIVE_2D_GRID_THRESHOLD = 100
 
@@ -13,28 +15,38 @@ class objbased_normalized_mesh:
     def __init__(self, filename):
         vertices = []
 
-        # read vertices
+        # read vertices while calculating x, y and z ranges
+        xmin = ymin = zmin = math.inf
+        xmax = ymax = zmax = -math.inf
+
         with open(filename) as objfile:
             for line in objfile:
                 if line[0:2] == 'v ':
-                    vertices.append(self.__parseVertex(line[2:]))
+                    # parse and save vertex
+                    v = self.__parseVertex(line[2:])
+                    vertices.append(v)
 
-        # calculate ranges -- TODO: compute while reading vertex info, not afterwards
-        xmin = min([v[0] for v in vertices])
-        xmax = max([v[0] for v in vertices])
-
-        ymin = min([v[1] for v in vertices])
-        ymax = max([v[1] for v in vertices])
-
-        zmin = min([v[2] for v in vertices])
-        zmax = max([v[2] for v in vertices])
+                    # update mins and maxs
+                    (x, y, z) = v
+                    if x < xmin:
+                        xmin = x
+                    elif x > xmax:
+                        xmax = x
+                    if y < ymin:
+                        ymin = y
+                    elif y > ymax:
+                        ymax = y
+                    if z < zmin:
+                        zmin = z
+                    elif z > zmax:
+                        zmax = z
 
         self.xspan = xmax - xmin
         self.yspan = ymax - ymin
         self.zspan = zmax - zmin
 
         # normalize vertices (translate positive octate)
-        vertices = [(v[0] - xmin, v[1] - ymin, v[2] - zmin) for v in vertices]
+        vertices = [(v[0] - xmin, v[1] - ymin, (v[2] - zmin)/self.zspan) for v in vertices]
         self.vertices = vertices
 
         # read faces into quadtree-based 2D adaptive grid using normalized vertices
