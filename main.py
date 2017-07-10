@@ -32,10 +32,13 @@ while True:
 
     print('Processing...')
 
-    processing_start = time()
-    image = heightmap.create(mesh, int(width), int(height), int(nthreads))
-    processing_end = time()
-
+    try:
+        processing_start = time()
+        image = heightmap.create(mesh, int(width), int(height), int(nthreads))
+        processing_end = time()
+    except:
+        print('An error occurred, try again', '\n')
+        continue
 
     print('Done! Processing time', processing_end - processing_start, '\n')
 
