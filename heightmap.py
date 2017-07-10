@@ -1,36 +1,31 @@
-import threading as thr
-from math import ceil
+import multiprocessing as mp
 import numpy as np
 import geometry
 
-def create(mesh, width, height, nthreads):
-    result = np.zeros((height, width))
 
-    def thread_target(positions, height, width, meshref):
-        for (i,j) in positions:
-            samplingpoint = ((j / width) * meshref.xspan, meshref.yspan - (i / height) * meshref.yspan)
-            containing_faces = meshref.faces_for_2D_point(samplingpoint)
-            if containing_faces:
-                sampleheight = max([geometry.calcMeshHeightFor2DPoint(samplingpoint, face) for face in containing_faces])
-                result.itemset((i,j), sampleheight)
+def height4position(i, j, mesh):
+    samplingpoint = ((j / shared_width.value) * mesh.xspan, mesh.yspan - (i / shared_height.value) * mesh.yspan)
+    containing_faces = mesh.faces_for_2D_point(samplingpoint)
+    if containing_faces:
+        return max([geometry.calcMeshHeightFor2DPoint(samplingpoint, face) for face in containing_faces])
+    else:
+        return 0
 
-    total_samples = height * width
-    samples_per_thread = int(ceil(total_samples / nthreads))
-    positions = [(i,j) for i in range(height) for j in range(width)]
+def create(mesh, width, height, nprocs):
 
-    pos_idx = 0
-    threads = []
-    for k in range(nthreads-1):
-        curr_thread = thr.Thread(target=thread_target, args=(positions[pos_idx:pos_idx+samples_per_thread], height, width, mesh))
-        threads.append(curr_thread)
-        curr_thread.start()
-        pos_idx += samples_per_thread
+    global shared_width
+    global shared_height
 
-    last_thread = thr.Thread(target=thread_target, args=(positions[pos_idx:], height, width, mesh))
-    threads.append(last_thread)
-    last_thread.start()
+    shared_width = mp.Value('i', width)
+    shared_height = mp.Value('i', height)
 
-    for t in threads:
-        t.join()
+    arguments = [(i, j, mesh) for i in range(shared_height.value) for j in range(shared_width.value)]
 
-    return result
+    pool = mp.Pool(nprocs)
+    result_list = list(pool.starmap_async(height4position, arguments).get())
+    pool.close()
+    pool.join()
+
+    result_matrix = [ result_list[i*width:(i+1)*width] for i in range(height) ]
+
+    return np.array(result_matrix)
