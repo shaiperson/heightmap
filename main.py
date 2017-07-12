@@ -1,4 +1,6 @@
 from objfileprocessing import objbased_normalized_mesh
+import matplotlib
+matplotlib.use('Agg')
 import sys
 from matplotlib import pyplot as plt
 from time import time
@@ -45,4 +47,4 @@ while True:
     plt.imshow(image)
     plt.colorbar()
     plt.imsave(filename, image)
-    plt.show()
+    # plt.show()

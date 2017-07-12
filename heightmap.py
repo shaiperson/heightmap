@@ -37,4 +37,4 @@ def create(mesh, width, height, nprocs):
     # result_matrix = [ result_list[i*width:(i+1)*width] for i in range(height) ]
     result_matrix = [ result_list[i*subwidth:(i+1)*subwidth] for i in range(subheight) ]
 
-    return result_matrix
+    return np.array(result_matrix)

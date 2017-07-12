@@ -16,8 +16,8 @@ class objbased_normalized_mesh:
         vertices = []
 
         # read vertices while calculating x, y and z ranges
-        xmin = ymin = zmin = math.inf
-        xmax = ymax = zmax = -math.inf
+        xmin = ymin = zmin = float('inf')
+        xmax = ymax = zmax = -float('inf')
 
         with open(filename) as objfile:
             for line in objfile:
