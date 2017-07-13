@@ -1,8 +1,11 @@
 from adaptive2Dgrid import adaptive2Dgrid
 import geometry
-import math
+from sys import stderr
 
 ADAPTIVE_2D_GRID_THRESHOLD = 100
+
+def isValidTriangle(t):
+    return t[0] != t[1] and t[1] != t[2] and t[0] != t[2]
 
 class objbased_normalized_mesh:
     def __init__(self, xspan, yspan, zspan, veritces, faces):
@@ -58,7 +61,10 @@ class objbased_normalized_mesh:
                     a = vertices[faceOffsets[0] - 1]
                     b = vertices[faceOffsets[1] - 1]
                     c = vertices[faceOffsets[2] - 1]
-                    self.faces.insert((a, b, c))
+                    if isValidTriangle((a, b, c)):
+                        self.faces.insert((a, b, c))
+                    else:
+                        print('Non-triangle in .obj: ', (a, b, c), file=stderr)
 
     def faces_for_2D_point(self, point):
         #return self.faces.find(point)
