@@ -44,7 +44,7 @@ while True:
 
     print('Done! Processing time', processing_end - processing_start, '\n')
 
-    plt.imshow(image)
+    plt.imshow(image, cmap=colormap)
     plt.colorbar()
     plt.imsave(filename, image)
-    # plt.show()
+    plt.show()
