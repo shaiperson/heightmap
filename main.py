@@ -42,7 +42,7 @@ while True:
         print('An error occurred, try again', '\n')
         continue
 
-    print('Done! Processing time', processing_end - processing_start, '\n')
+    print('Done! Processing time', processing_end - processing_start, '\n', 'seconds')
 
     plt.imshow(image, cmap=colormap)
     plt.colorbar()

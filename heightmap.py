@@ -5,11 +5,11 @@ import geometry
 def height4position(i, j, mesh):
     samplingpoint = ((j / shared_width.value) * mesh.xspan, mesh.yspan - (i / shared_height.value) * mesh.yspan)
     containing_faces = mesh.faces_for_2D_point(samplingpoint)
-    if containing_faces:
-        candidates = [geometry.calcMeshHeightFor2DPoint(samplingpoint, face) for face in containing_faces]
+    if containing_faces: # Faces were found that enclose (i,j)
+        candidates = [geometry.calcMeshHeightFor2DPoint(samplingpoint, face) for face in containing_faces] # Folds in the mesh mean more than one candidate
         result = max(candidates)
         return result
-    else:
+    else: # Point (i,j) falls within a mesh hole
         return 0
 
 def create(mesh, width, height, nprocs):
