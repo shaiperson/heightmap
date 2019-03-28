@@ -1,5 +1,5 @@
 # Description
-A script to generate surface elevation maps for 3D triangular meshes with a large number of faces. The program samples the mesh height values (z axis) at a user-specified resolution and outputs the corresponding heightmap. It relies on an adaptive quadtree structure for efficient lookup of mesh faces and supports multi-threaded processing. Threaded execution is supported.
+A script to generate surface elevation maps for 3D triangular meshes with a large number of faces. The program samples the mesh height values (z axis) at a user-specified resolution and outputs the corresponding heightmap. It relies on an adaptive quadtree structure for efficient lookup of mesh faces and supports multi-threaded processing.
 
 # Usage
 The script takes the input mesh file in .obj format as a command line argument. After processing the input file, you will be prompted to specify the heightmap resolution, number of threads to be used, output file address and a matplotlib colormap (default is 'viridis').
